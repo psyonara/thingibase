@@ -1,5 +1,8 @@
 django
+gazpacho
 gunicorn
+ipython
 pip-tools
 psycopg2
 pytest
+requests
