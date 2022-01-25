@@ -36,3 +36,23 @@ def get_thing_soup(thing_id):
     url = f"https://www.thingiverse.com/thing:{thing_id}"
     html = get_html(url)
     return Soup(html)
+
+
+def get_thing_details(thing_id):
+    """
+    Get the details of a thing from Thingiverse.
+    :param thing_id: ID of thing on Thingiverse
+    :return: A dict containing details of the thing
+    """
+    soup = get_thing_soup(thing_id)
+    title = soup.find("div", {"class": "ThingPage__modelName"}, mode="first").html
+    summary = soup.find("div", {"class": "ThingPage__description"}, mode="first").html
+    print_settings = soup.find("div", {"class": "ThingPage__preHistory"}, mode="all")
+
+    print_parts = "".join(part.html for part in print_settings)
+    description = f"{summary}{print_parts}"
+
+    return {
+        "title": title,
+        "description": description
+    }
