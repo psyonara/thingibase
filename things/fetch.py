@@ -1,4 +1,5 @@
 import json
+from concurrent.futures import ThreadPoolExecutor
 
 import requests
 from django.conf import settings
@@ -38,7 +39,12 @@ def get_thing_soup(thing_id):
     """
     base_url = f"https://www.thingiverse.com/thing:{thing_id}"
     downloads_url = f"https://www.thingiverse.com/thing:{thing_id}/files"
-    return Soup(get_html(base_url)), Soup(get_html(downloads_url))
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        base_future = executor.submit(get_html, base_url)
+        downloads_future = executor.submit(get_html, downloads_url)
+    base_html = base_future.result()
+    downloads_html = downloads_future.result()
+    return Soup(base_html), Soup(downloads_html)
 
 
 def get_thing_details(thing_id):
